@@ -7,13 +7,12 @@
 } */
 
 @theme {
-  --color-primary: #7E33E0;
-  --color-primary-dark: #151875;
-  --color-secondary: #FB2E86;
-  --color-secondary-light: #FDAAC9;
-  --color-dark-white: #F6F5FF
+  --color-primary: #C97B4A;         /* warm terracotta — buttons, active links, logo mark */
+  --color-primary-dark: #3E2C23;    /* deep walnut — top bar, headings, logo text */
+  --color-secondary: #2F5D50;       /* forest green — cart badge, small accents */
+  --color-secondary-light: #A8C3B8; /* soft sage — subtle hover/disabled states */
+  --color-dark-white: #FAF6F1;      /* warm off-white — page background */
 }
-
 @theme {
   --font-josefin: "Josefin Sans", Sans-serif;
   --font-lato: "Lato", Sans-serif;

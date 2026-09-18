@@ -1,108 +1,166 @@
-import React from "react";
-import { ShoppingCart, Heart, ZoomIn, Star } from "lucide-react";
+import { Heart, ShoppingCart, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-// type Categories = {
-//     id: number;
-//     title: string;
-//     parentId: string | number;
-//     subCategories: Categories[];
-// }
+const PLACEHOLDER =
+  "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&h=800&fit=crop";
 
-// type ProductDetails = {
-//     id: number;
-//     title: string;
-//     parentId: string | number;
-//     subCategories: Categories[];
-// }
-// : ProductDetails
-// : Categories[]
-function ProductCard(products) {
-  // console.log("Products Products",products)
+type ProductImage = { id: number; image: string };
 
-  const handleAddToCart = (id: number) => {
-    let token = localStorage.getItem("token");
-    if (token) {
-      axios
-        .post("https://ecom-zb9o.vercel.app/api/carts", {
-          productId: id,
-        }, {
-          headers: {
-            Authorization:`Bearer ${token}`
-          }
-        })
-        .then((res) => {
-          console.log('Res: ',res);
-          console.log("Added to cart");
-        });
-    } else {
-      console.log("login required!!");
-      
+type Product = {
+  id: number;
+  title: string;
+  price: number | string;
+  description?: string;
+  images?: ProductImage[];
+  image?: string;
+  category?: { title: string };
+  stock?: number;
+};
+
+const formatPrice = (value: number | string) => {
+  const num = typeof value === "string" ? parseFloat(value) : value;
+  if (Number.isNaN(num)) return value;
+  return num.toLocaleString("en-IN");
+};
+
+function ProductCard({ products }: { products: Product[] }) {
+  const addToCart = (e: React.MouseEvent, id: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.log("Login required");
+      return;
     }
+
+    axios
+      .post(
+        "https://ecom-zb9o.vercel.app/api/carts",
+        { productId: id },
+        { headers: { Authorization: `Bearer ${token}` } },
+      )
+      .then(() => console.log("Added to cart"))
+      .catch((err) => console.log("Cart error", err));
   };
 
   return (
     <>
-      {products.products.map((product) => (
-        <Link
-          to={`/products/${product.id}`}
-          key={product.id}
-          className="shadow-xl shadow-black/50 flex items-center gap-2 h-[230px]"
-        >
-          <div className="p-1 mr-[29px]">
-            <img
-              height={"197px"}
-              width={"284px"}
-              src={
-                "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D"
-              }
-              alt=""
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center gap-[67px]">
-              <p className="font-josefin font-bold text-[18px] text-primary-dark ">
+      {products.map((product) => {
+        const imageSrc =
+          product.images?.[0]?.image || product.image || PLACEHOLDER;
+
+        return (
+          <Link
+            key={product.id}
+            to={`/products/${product.id}`}
+            className="group flex h-full flex-col overflow-hidden rounded-2xl border border-primary-dark/10 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary-dark/5"
+          >
+            {/* Image */}
+            <div className="relative aspect-square w-full overflow-hidden bg-dark-white">
+              <img
+                src={imageSrc}
+                alt={product.title}
+                loading="lazy"
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+
+              {/* Category pill */}
+              {product.category?.title && (
+                <span className="absolute left-3 top-3 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide text-primary-dark backdrop-blur-sm">
+                  {product.category.title}
+                </span>
+              )}
+
+              {/* Wishlist */}
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-white/95 text-gray-500 shadow-sm backdrop-blur-sm transition-colors hover:bg-primary hover:text-white"
+                aria-label="Add to wishlist"
+              >
+                <Heart size={15} />
+              </button>
+
+              {/* Out of stock overlay */}
+              {product.stock === 0 && (
+                <div className="absolute inset-0 grid place-items-center bg-white/70">
+                  <span className="rounded-full bg-primary-dark px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
+                    Out of stock
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Body */}
+            <div className="flex flex-1 flex-col p-5">
+              <h3 className="line-clamp-2 font-josefin text-[15.5px] font-semibold leading-snug text-primary-dark transition-colors group-hover:text-primary">
                 {product.title}
-              </p>
-              <div className="flex gap-1">
-                <div className="w-2 h-2 rounded-full bg-[#DE9034]"></div>
-                <div className="w-2 h-2 rounded-full bg-[#E60584]"></div>
-                <div className="w-2 h-2 rounded-full bg-[#5E37FF]"></div>
+              </h3>
+
+              {/* Rating */}
+              <div className="mt-2 flex items-center gap-1.5">
+                <div className="flex items-center gap-0.5 text-yellow-500">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star key={s} size={12} fill="currentColor" />
+                  ))}
+                </div>
+                <span className="text-[11.5px] text-gray-400">(22)</span>
+              </div>
+
+              {product.description && (
+                <p className="mt-2 line-clamp-2 text-[12.5px] leading-relaxed text-gray-500">
+                  {product.description}
+                </p>
+              )}
+
+              {/* Price + CTA */}
+              <div className="mt-auto pt-5">
+                <p className="font-josefin text-[17px] font-bold text-primary">
+                  NPR {formatPrice(product.price)}
+                </p>
+
+                <div className="mt-3 flex items-center gap-2">
+                  <button
+                    onClick={(e) => addToCart(e, product.id)}
+                    disabled={product.stock === 0}
+                    className="flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-primary text-[13px] font-medium text-white transition-all duration-200 hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-primary/40"
+                  >
+                    <ShoppingCart size={15} />
+                    Add to Cart
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-primary-dark/15 text-primary-dark transition-colors hover:border-primary hover:bg-primary hover:text-white"
+                    aria-label="Quick view"
+                  >
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M15 3h6v6" />
+                      <path d="M10 14 21 3" />
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
-            <div className="flex gap-[9px]">
-              <span className="font-josefin text-[14px] ">{product.price}</span>
-              <span className=" text-secondary text-[14px] font-josefin line-through">
-                $52.00
-              </span>
-              <span className="text-[14px]">
-                <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
-              </span>
-            </div>
-            <p className="font-lato font-normal text-[16px] text-[#9295AA] ">
-              {product.description}
-            </p>
-            <div className="flex gap-[31px]">
-              <span>
-                <ShoppingCart
-                  className="h-4 w-4"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleAddToCart(product.id);
-                  }}
-                />
-              </span>
-              <span>
-                <Heart className="h-4 w-4" />
-              </span>
-              <span>
-                <ZoomIn className="h-4 w-4" />
-              </span>
-            </div>
-          </div>
-        </Link>
-      ))}
+          </Link>
+        );
+      })}
     </>
   );
 }

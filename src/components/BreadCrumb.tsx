@@ -1,151 +1,80 @@
-import { Home } from "lucide-react";
-import { useLocation } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { ChevronRight } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
-type path = {
-    title: string;
-    link?: string;
+type Path = {
+  title: string;
+  link?: string;
 };
 
-// type Bread = {
-//   title: string;
-//   path: string;
-// };
+const BreadCrumb = ({
+  title,
+  paths,
+}: {
+  title?: string;
+  paths?: Path[];
+}) => {
+  const location = useLocation();
+  const newPath = location.pathname.split("/").filter(Boolean);
 
-const BreadCrumb = ({ title, paths }: { title: string; paths: path[] }) => {
-    const location = useLocation();
-    //   console.log(location);
-    const pathname = location.pathname;
-    const pathArr = pathname.split("/");
-    const newPath = pathArr.splice(1);
+  // Prefer the explicitly provided `paths`.
+  // Fall back to the URL segments if none were passed.
+  const crumbs: Path[] =
+    paths && paths.length > 0
+      ? paths
+      : newPath.map((segment) => ({
+          title: segment.charAt(0).toUpperCase() + segment.slice(1),
+          link: `/${segment}`,
+        }));
 
-    console.log("Path", newPath);
+  const heading = title || newPath[0] || "Home";
 
-    return (
-        <div className=" bg-dark-white">
-            <div className="container py-[40px] sm:py-[48px] md:py-[56px] lg:py-[64px] xl:py-[80px] 2xl:py-[96px] ">
-                <span className="font-josefin capitalize text-[36px]">
-                    {title || newPath[0]}
-                </span>
-                <ul className="flex gap-1">
-                    <li>
-                        <Link className="text-primary-dark" to="/">
-                            Home
-                        </Link>
-                    </li>
-                    {
-                        paths ? (
-                            <>
-                          {paths.map((el, index)=>(
-                                <li key={index}>
-                                    <Link className="text-primary-dark" to={el.link}>
-                                        {el.title}
-                                    </Link>
-                                </li>
-                                ))}
-                            </>) : (
-                            <>
-                                 { newPath.map((el, index) => (
-                                <li key={index}>
-                                    <Link className="text-primary-dark" to="/">
-                                        {el}
-                                    </Link>
-                                </li>
-                                ))}
-                            </>)
+  return (
+    <section className="border-b border-primary-dark/10 bg-dark-white">
+      <div className="container py-10 sm:py-12 md:py-14 lg:py-16">
+        {/* Page title */}
+        <h1 className="font-josefin text-[30px] font-bold capitalize leading-tight text-primary-dark sm:text-[34px] md:text-[36px]">
+          {heading}
+        </h1>
 
-                    }
-                    {/* {newPath.map((el, index) => (
-            <li key={index}>
-              <Link className="text-primary-dark" to="/">
-                {el}
+        {/* Breadcrumb trail */}
+        <nav aria-label="Breadcrumb" className="mt-3">
+          <ol className="flex flex-wrap items-center gap-1.5 text-[13.5px]">
+            <li>
+              <Link
+                to="/"
+                className="font-medium text-gray-500 transition-colors hover:text-primary"
+              >
+                Home
               </Link>
             </li>
-          ))} */}
-                    {/* {paths.map((el, index) => (
-            <li key={index}>
-              <Link className="text-primary-dark" to={el.link}>
-                {el.title}
-              </Link>
-            </li>
-          ))} */}
-                </ul>
-            </div>
-        </div>
-    );
+
+            {crumbs.map((el, index) => {
+              const isLast = index === crumbs.length - 1;
+
+              return (
+                <li key={`${el.title}-${index}`} className="flex items-center gap-1.5">
+                  <ChevronRight size={14} className="text-primary-dark/30" />
+
+                  {isLast || !el.link ? (
+                    <span className="font-medium capitalize text-primary-dark">
+                      {el.title}
+                    </span>
+                  ) : (
+                    <Link
+                      to={el.link}
+                      className="font-medium capitalize text-gray-500 transition-colors hover:text-primary"
+                    >
+                      {el.title}
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
+      </div>
+    </section>
+  );
 };
 
 export default BreadCrumb;
-
-// import { Link, useLocation } from "react-router-dom";
-
-// type Bread = {
-//     title: string;
-// };
-
-// const BreadCrumb = ({ title }: Bread) => {
-//     const location = useLocation();
-
-//     const paths = location.pathname.split("/").filter(Boolean);
-
-//     return (
-//         <div className="bg-dark-white">
-//             <div className="container py-[40px] sm:py-[48px] md:py-[56px] lg:py-[64px] xl:py-[80px] 2xl:py-[96px]">
-//                 <span className="font-josefin text-[36px]">{title}</span>
-
-//                 <ul className="flex gap-2">
-//                     <li>
-//                         <Link to="/">Home</Link>
-//                     </li>
-
-//                     {paths.map((path, index) => {
-//                         const route = "/" + paths.slice(0, index + 1).join("/");
-
-//                         return (
-//                             <li key={route}>
-//                                 /
-//                                 <Link
-//                                     to={route}
-//                                     className={
-//                                         index === paths.length - 1
-//                                             ? "text-secondary"
-//                                             : ""
-//                                     }
-//                                 >
-//                                     {path.charAt(0).toUpperCase() + path.slice(1)}
-//                                 </Link>
-//                             </li>
-//                         );
-//                     })}
-//                 </ul>
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default BreadCrumb;
-
-{
-    /* <li>
-                <Link className="text-primary-dark" to="/">
-                  {newPath[0]}
-                </Link>
-              </li>
-              <li>
-                <Link className="text-primary-dark" to="/pages">
-                  {props.itemTwo}
-                </Link>
-              </li>
-              <li>
-                <span>
-                  <Link
-                    className={
-                      location.pathname ? "text-secondary" : "text-primary-dark"
-                    }
-                    to={props.path}
-                  >
-                    {location.pathname.replace("/", "")}
-                  </Link>
-                </span>
-              </li> */
-}

@@ -13,28 +13,10 @@ import Cart from "./components/CartPage.tsx";
 import Orders from "./components/Orders.tsx";
 import ProtectedRoutes from "./pages/ProtectedRoutes.tsx";
 import Contact from "./pages/Contact.tsx";
-import Blogs from "./pages/Blogs.tsx";
 import Shop from "./pages/Shop.tsx";
-import AdminLayout from "./components/layout/AdminLayout.tsx";
-import Dashboard from "./admin/Dashboard.tsx";
-import Categories from "./admin/Categories.tsx";
-import Products from "./admin/Products.tsx";
-
-// const router = createBrowserRouter([
-//   {
-//     path: '/',
-//     element: <Layout loggedIn={loggedIn} />,
-//     children: [
-//       { path: '', element: <Home /> },
-//       // Passes the state setter correctly to Login
-//       { path: 'login', element: <Login setLoggedIn={setLoggedIn} /> },
-//       { path: 'register', element: <Signup /> },
-//     ],
-//   },
-// ])
 
 function App() {
-  let token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(token ? true : false);
 
@@ -47,7 +29,6 @@ function App() {
           },
         })
         .then((res) => {
-          // console.log(res.data)
           dispatch(setUser(res.data));
         })
         .finally(() => {
@@ -60,31 +41,6 @@ function App() {
 
   const router = createBrowserRouter([
     {
-      // 7.47
-      path: "admin",
-      element: <ProtectedRoutes forAdmin={true} />,
-      children: [
-        {
-          path: "",
-          element: <AdminLayout />,
-          children: [
-            {
-              path: "dashboard",
-              element: <Dashboard />,
-            },
-            {
-              path: "categories",
-              element: <Categories />,
-            },
-            {
-              path: "products",
-              Component: Products,
-            },
-          ],
-        },
-      ],
-    },
-    {
       path: "/",
       element: <Layout />,
       children: [
@@ -92,19 +48,12 @@ function App() {
         { path: "login", element: <Login /> },
         { path: "register", element: <Signup /> },
         { path: "shop", element: <Shop /> },
-        { path: "blogs", element: <Blogs /> },
         { path: "contact", element: <Contact /> },
         {
           path: "products",
           children: [
-            {
-              path: "",
-              element: <ProductsListing />,
-            },
-            {
-              path: ":slug",
-              element: <ProductDetails />,
-            },
+            { path: "", element: <ProductsListing /> },
+            { path: ":slug", element: <ProductDetails /> },
           ],
         },
         {

@@ -1,82 +1,130 @@
-import { useState } from "react";
- 
-// Replace YOUR_IMAGE_URL below with the path/URL to your own product photo.
-// e.g. import productImg from "./your-photo.jpg"; then use {productImg}
-const YOUR_IMAGE_URL = "https://placehold.co/700x600/f4c9d8/9a3a5e?text=Your+Product+Photo";
- 
-const slides = [0, 1, 2, 3];
- 
+import { Link } from "react-router-dom";
+import { ArrowRight, Star, Sparkles } from "lucide-react";
+
+const MAIN_IMG ="/images/hero-main.jpg";
+const SMALL_IMG ="/images/hero-small.jpg";
+
 export default function HeroBanner() {
-  const [active, setActive] = useState(0);
- 
   return (
-    <section className="relative w-full overflow-hidden">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-6 py-16 md:grid-cols-2 md:px-12 lg:py-24">
-        {/* Left: copy */}
-        <div className="relative z-10 order-2 md:order-1">
-          <p className="mb-3 font-lato text-[16px] font-bold tracking-wide text-secondary">
-            Best furniture for your castle....
-          </p>
- 
-          <h1 className="font-josefin text-4xl font-bold leading-tight text-black sm:text-5xl lg:text-6xl">
-            New furniture
+    <section className="relative overflow-hidden border-b border-primary-dark/10 bg-dark-white">
+
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-40 top-1/2 h-[600px] w-[600px] -translate-y-1/2 rounded-full bg-primary/10 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -left-40 bottom-0 h-[420px] w-[420px] rounded-full bg-secondary/10 blur-3xl"
+      />
+
+      <div className="container relative grid grid-cols-1 items-center gap-12 py-14 lg:grid-cols-12 lg:gap-16 lg:py-20">
+   
+        <div className="lg:col-span-5">
+          <span className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-white/70 px-3 py-1 text-[12.5px] font-medium text-primary-dark backdrop-blur">
+            <Sparkles size={13} className="text-primary" />
+            Spring Collection · 2026
+          </span>
+
+          <h1 className="mt-6 font-josefin text-[42px] font-bold leading-[1.05] tracking-tight text-primary-dark sm:text-[52px] lg:text-[58px]">
+            Pieces that
             <br />
-            collection trends
-            <br />
-            in 2026
+            live with <span className="text-primary">you</span>.
           </h1>
- 
-          <p className="mt-6 max-w-md text-[15px] font-bold leading-relaxed text-[#8A8FB9]">
-            Lorem ipsum sit amet, consectetur adipiscing elit. Magna in
-            est adipiscing in phasellus non in justo.
+
+          <p className="mt-6 max-w-md text-[15.5px] leading-relaxed text-gray-500">
+            Solid walnut, hand-stitched linen, honest joinery. Furniture built
+            to be used every day — and loved for years.
           </p>
- 
-          <button className="mt-8 bg-[#e91e8c] px-8 py-3 text-sm font-josefin font-bold text-[17px] text-white shadow-sm transition hover:bg-[#d4127b]">
-            Shop now
-          </button>
- 
-          {/* dot pagination (decorative, mirrors reference) */}
-          <div className="mt-16 flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#e91e8c]" />
+
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <Link
+              to="/products"
+              className="inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-6 text-[15px] font-semibold text-white shadow-lg shadow-primary/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/40"
+            >
+              Explore collection
+              <ArrowRight size={16} />
+            </Link>
+            <Link
+              to="/shop"
+              className="inline-flex h-12 items-center rounded-xl border border-primary-dark/15 bg-white px-6 text-[15px] font-semibold text-primary-dark transition-colors hover:border-primary/40 hover:text-primary"
+            >
+              Visit showroom
+            </Link>
+          </div>
+
+     
+          <div className="mt-10 flex items-center gap-4">
+            <div className="flex -space-x-2">
+              <span className="grid h-8 w-8 place-items-center rounded-full border-2 border-dark-white bg-primary/25 text-[11px] font-bold text-primary-dark">
+                A
+              </span>
+              <span className="grid h-8 w-8 place-items-center rounded-full border-2 border-dark-white bg-secondary/25 text-[11px] font-bold text-primary-dark">
+                R
+              </span>
+              <span className="grid h-8 w-8 place-items-center rounded-full border-2 border-dark-white bg-primary-dark/20 text-[11px] font-bold text-primary-dark">
+                P
+              </span>
+            </div>
+            <div>
+              <div className="flex items-center gap-0.5 text-primary">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <Star key={i} size={12} fill="currentColor" />
+                ))}
+              </div>
+              <p className="mt-0.5 text-[12.5px] text-gray-500">
+                <span className="font-semibold text-primary-dark">2,400+</span>{" "}
+                happy homes
+              </p>
+            </div>
           </div>
         </div>
- 
-        {/* Right: product image */}
-        <div className="relative order-1 flex items-center justify-center md:order-2">
-          {/* soft background blob, mirrors reference */}
-          <div className="absolute h-[420px] w-[420px] rounded-full bg-[#e9ddf5] sm:h-[480px] sm:w-[480px] lg:h-[520px] lg:w-[520px]" />
- 
-          {/* your product image goes here */}
-          {/* <img
-            src={YOUR_IMAGE_URL}
-            alt="Featured product"
-            className="relative z-10 max-h-[420px] w-auto object-contain sm:max-h-[480px] lg:max-h-[560px]"
-          /> */}
- 
-          {/* discount badge */}
-          <div className="absolute right-2 top-6 z-20 flex h-24 w-24 flex-col items-center justify-center rounded-full bg-[#3fc4f0] text-center text-white shadow-md sm:right-6 sm:top-8 sm:h-28 sm:w-28">
-            <span className="text-lg font-bold leading-none sm:text-xl">50%</span>
-            <span className="text-sm font-semibold sm:text-base">off</span>
+
+  
+        <div className="relative lg:col-span-7">
+          <div className="grid grid-cols-12 gap-4">
+     
+            <div className="col-span-12 overflow-hidden rounded-3xl border border-primary-dark/10 bg-white shadow-[0_30px_80px_-40px_rgba(62,44,35,0.45)] sm:col-span-8">
+              <img
+                src={MAIN_IMG}
+                alt="Featured Furnew furniture"
+                className="h-[380px] w-full object-cover sm:h-[480px] lg:h-[560px]"
+              />
+            </div>
+
+            {/* Small image + dark info card */}
+            <div className="col-span-12 flex flex-col gap-4 sm:col-span-4">
+              <div className="hidden overflow-hidden rounded-3xl border border-primary-dark/10 bg-white sm:block">
+                <img
+                  src={SMALL_IMG}
+                  alt="Furnew chair detail"
+                  className="h-[180px] w-full object-cover"
+                />
+              </div>
+
+              <div className="flex-1 rounded-3xl bg-primary-dark p-5 text-white">
+                <p className="font-josefin text-[15.5px] font-semibold">
+                  Handcrafted
+                </p>
+                <p className="mt-1.5 text-[12.5px] leading-relaxed text-white/60">
+                  Made in our Kathmandu workshop, one piece at a time.
+                </p>
+                <div className="mt-4 h-px bg-white/10" />
+                <p className="mt-4 text-[10.5px] uppercase tracking-[0.18em] text-white/40">
+                  Est. 2026
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Floating status tag */}
+          <div className="absolute -bottom-4 left-6 hidden items-center gap-2 rounded-2xl border border-primary-dark/10 bg-white px-4 py-2.5 shadow-lg sm:flex">
+            <span className="h-2 w-2 rounded-full bg-secondary" />
+            <span className="text-[12.5px] font-medium text-primary-dark">
+              In stock · Ships in 3 days
+            </span>
           </div>
         </div>
-      </div>
- 
-      {/* slide indicator dots bottom-right, mirrors reference */}
-      <div className="absolute bottom-6 right-8 z-20 flex items-center gap-2 sm:bottom-10 sm:right-16">
-        {slides.map((i) => (
-          <button
-            key={i}
-            onClick={() => setActive(i)}
-            aria-label={`Go to slide ${i + 1}`}
-            className={`h-2.5 w-2.5 rotate-45 border transition ${
-              active === i
-                ? "border-[#e91e8c] bg-[#e91e8c]"
-                : "border-[#e91e8c] bg-transparent"
-            }`}
-          />
-        ))}
       </div>
     </section>
   );
 }
- 

@@ -1,6 +1,4 @@
-import React from "react";
 import { useForm } from "react-hook-form";
-import BreadCrumb from "../components/BreadCrumb";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast, Bounce } from "react-toastify";
@@ -13,10 +11,6 @@ type LoginForm = {
   password: string;
 };
 
-// type LoginProps = {
-//     setLoggedIn: (status: boolean) => void
-// }
-// { setLoggedIn }: LoginProps
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -36,9 +30,6 @@ const Login = () => {
       console.log(res.data.user);
 
       if (res.data.msg) {
-        // if (res.data.token) {
-        // localStorage.setItem("token", res.data.token)
-        // }
         console.log(res.data.user);
         if (res.data.token) {
           localStorage.setItem("token", res.data.token);
@@ -46,7 +37,6 @@ const Login = () => {
 
         dispatch(setUser(res.data.user));
         toast.success("Login Successful");
-        // setLoggedIn(true)
         if (res.data.user.isAdmin) {
           navigate("/admin/dashboard");
         } else {
@@ -73,85 +63,109 @@ const Login = () => {
         transition={Bounce}
       />
 
-      <BreadCrumb
-        title="My Account"
-        paths={[
-          {
-            title: "login",
-            link: "/login",
-          },
-        ]}
-      />
-
-      <div className="container mx-auto flex justify-center items-center py-10">
-        <div className="border border-[#C2C5E1] p-[50px] w-[474px]">
+      <div className="flex min-h-screen items-center justify-center bg-dark-white px-4 py-14">
+        <div className="w-full max-w-[474px] rounded-2xl border border-primary-dark/10 bg-white p-10 shadow-[0_25px_60px_-30px_rgba(62,44,35,0.35)]">
           <form
-            className="flex flex-col items-center gap-2"
+            className="flex flex-col items-center gap-1"
             onSubmit={handleSubmit(onSubmit)}
           >
-            <p className="text-[#000000] font-josefin font-bold text-[32px]">
-              Login
+            {/* Logo mark */}
+            <span className="mb-3 grid h-14 w-14 place-items-center rounded-full bg-primary/10">
+              <span className="grid h-9 w-9 place-items-center rounded-full bg-primary font-josefin text-lg font-bold text-white shadow-lg shadow-primary/30">
+                F
+              </span>
+            </span>
+
+            <p className="font-josefin text-[30px] font-bold leading-tight text-primary-dark">
+              Welcome Back
             </p>
 
-            <p className="font-lato mb-3 text-[#9096B2] text-[17px]">
+            <p className="mb-6 text-center font-lato text-[15px] text-gray-500">
               Please login using account details below.
             </p>
 
-            <input
-              className="border p-4 w-full"
-              placeholder="Email Address"
-              type="email"
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^\S+@\S+\.\S+$/,
-                  message: "Invalid email address",
-                },
-              })}
-            />
+            {/* Email */}
+            <div className="w-full">
+              <label className="mb-1.5 block text-[13px] font-medium text-primary-dark">
+                Email Address
+              </label>
+              <input
+                className="w-full rounded-lg border border-primary-dark/10 bg-dark-white/60 px-4 py-3.5 text-[15px] text-primary-dark outline-none transition-all duration-200 placeholder:text-gray-400 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20"
+                placeholder="you@example.com"
+                type="email"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^\S+@\S+\.\S+$/,
+                    message: "Invalid email address",
+                  },
+                })}
+              />
+              {errors.email && (
+                <p className="mt-1.5 self-start text-sm text-red-500">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
 
-            {errors.email && (
-              <p className="text-red-500 self-start text-sm">
-                {errors.email.message}
+            {/* Password */}
+            <div className="mt-4 w-full">
+              <label className="mb-1.5 block text-[13px] font-medium text-primary-dark">
+                Password
+              </label>
+              <input
+                className="w-full rounded-lg border border-primary-dark/10 bg-dark-white/60 px-4 py-3.5 text-[15px] text-primary-dark outline-none transition-all duration-200 placeholder:text-gray-400 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20"
+                type="password"
+                placeholder="Enter your password"
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 8,
+                    message: "Password must be at least 8 characters",
+                  },
+                })}
+              />
+              {errors.password && (
+                <p className="mt-1.5 self-start text-sm text-red-500">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            <div className="mt-3 flex w-full justify-end">
+              <p className="cursor-pointer text-[13px] font-medium text-gray-400 transition-colors hover:text-primary hover:underline">
+                Forgot your password?
               </p>
-            )}
+            </div>
 
-            <input
-              className="border p-4 w-full"
-              type="password"
-              placeholder="Password"
-              {...register("password", {
-                required: "Password is required",
-                minLength: {
-                  value: 8,
-                  message: "Password must be at least 8 characters",
-                },
-              })}
-            />
-
-            {errors.password && (
-              <p className="text-red-500 self-start text-sm">
-                {errors.password.message}
-              </p>
-            )}
-
-            <p className="self-start text-[#9096B2] hover:underline cursor-pointer">
-              Forgot your password?
-            </p>
-
+            {/* Submit */}
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full cursor-pointer h-14 mt-4 text-white font-bold ${
-                isSubmitting ? "bg-pink-300 cursor-not-allowed" : "bg-secondary"
+              className={`mt-6 h-14 w-full rounded-lg text-[15px] font-bold tracking-wide text-white transition-all duration-200 ${
+                isSubmitting
+                  ? "cursor-not-allowed bg-primary/50"
+                  : "cursor-pointer bg-primary shadow-lg shadow-primary/30 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/40 active:translate-y-0"
               }`}
             >
               {isSubmitting ? "Logging In..." : "Sign In"}
             </button>
 
-            <p className="mt-4 text-[#9096B2]">
-              Don't have an account?
-              <Link to="/register" className="ml-1 hover:underline">
+            {/* Divider */}
+            <div className="mt-6 flex w-full items-center gap-3">
+              <span className="h-px flex-1 bg-primary-dark/10" />
+              <span className="text-[12px] uppercase tracking-widest text-gray-400">
+                or
+              </span>
+              <span className="h-px flex-1 bg-primary-dark/10" />
+            </div>
+
+            <p className="mt-5 text-[14px] text-gray-500">
+              Don't have an account?{" "}
+              <Link
+                to="/register"
+                className="ml-1 font-medium text-primary transition-colors hover:underline"
+              >
                 Create account
               </Link>
             </p>

@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
-import { X, Minus, Plus } from "lucide-react";
+import {
+  Minus,
+  Plus,
+  Trash2,
+  ShoppingBag,
+  Truck,
+  ShieldCheck,
+  Lock,
+} from "lucide-react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCount } from "../redux/features/cartSlice";
 import CartSkeleton from "../skeletons/CartSkeleton";
@@ -8,13 +17,35 @@ import CartSkeleton from "../skeletons/CartSkeleton";
 const PLACEHOLDER_IMG =
   "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=200&h=200&fit=crop";
 
+const FREE_SHIPPING_THRESHOLD = 50000;
+
+type CartRow = {
+  id: number;
+  productId: number;
+  name: string;
+  price: number;
+  qty: number;
+  stock: number;
+  img: string;
+  sellerId: number;
+  sellerName: string;
+  shippingCharge: number;
+};
+
+type DeliveryForm = {
+  phone: string;
+  address: string;
+  secondaryAddress: string;
+  paymentMode: string;
+};
+
 export default function CartPage() {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState<CartRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const dispatch = useDispatch();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<DeliveryForm>({
     phone: "",
     address: "",
     secondaryAddress: "",
@@ -29,8 +60,8 @@ export default function CartPage() {
         },
       })
       .then((res) => {
-        const mapped = res.data.data.map((cartItem) => ({
-          id: cartItem.id, // cart row id, used for update/remove
+        const mapped: CartRow[] = res.data.data.map((cartItem: any) => ({
+          id: cartItem.id,
           productId: cartItem.productId,
           name: cartItem.product.title,
           price: parseFloat(cartItem.product.price),
@@ -43,11 +74,8 @@ export default function CartPage() {
             cartItem.product.user.shipping_charge || 0,
           ),
         }));
-        console.log("length cartt: ", res.data.data);
-        const cartLength = res.data.data.length;
-        dispatch(setCount(cartLength));
+        dispatch(setCount(res.data.data.length));
         setItems(mapped);
-        // console.log("item length: ",items.length)
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
@@ -58,7 +86,6 @@ export default function CartPage() {
   }, []);
 
   const updateQty = (productId: number, id: number, quantity: number) => {
-    console.log({ quantity });
     setItems((prev) =>
       prev.map((it) =>
         it.id === id
@@ -67,47 +94,30 @@ export default function CartPage() {
       ),
     );
 
-    axios
-      .post(
-        `https://ecom-zb9o.vercel.app/api/carts`,
-        {
-          productId,
-          quantity: quantity,
-        },
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        },
-      )
-      .then((res) => {
-        // fetchCarts()
-      });
+    axios.post(
+      `https://ecom-zb9o.vercel.app/api/carts`,
+      { productId, quantity },
+      {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      },
+    );
   };
 
-  const removeItem = (id) => {
+  const removeItem = (id: number) => {
     setItems((prev) => prev.filter((it) => it.id !== id));
-    // TODO: persist to backend, e.g.
-    // axios.delete(`https://ecom-zb9o.vercel.app/api/carts/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
+    dispatch(setCount(items.length - 1));
   };
 
-  const clearCart = () => setItems([]);
+  const clearCart = () => {
+    setItems([]);
+    dispatch(setCount(0));
+  };
 
   const subtotal = items.reduce((sum, it) => sum + it.price * it.qty, 0);
 
-  // Shipping: one flat charge per distinct seller in the cart
-
-  // const shipping = Array.from(
-  //   new Map(items.map((it) => [it.sellerName, it.shippingCharge])).values(),
-  // ).reduce((sum, charge) => sum + charge, 0);
-
-  let distinctSellers = [
-    // {sellerId:1,shippingCarge:100},
-    // {sellerId:2,shippingCarge:50}
-  ];
-
+  const distinctSellers: { sellerId: number; shippingCharge: number }[] = [];
   items.forEach((el) => {
-    let exists = distinctSellers.find((seller) => {
-      return seller.sellerId == el.sellerId;
-    });
+    const exists = distinctSellers.find((s) => s.sellerId === el.sellerId);
     if (!exists) {
       distinctSellers.push({
         sellerId: el.sellerId,
@@ -116,8 +126,6 @@ export default function CartPage() {
     }
   });
 
-  console.log({ distinctSellers });
-
   let shipping = 0;
   distinctSellers.forEach((el) => {
     shipping += el.shippingCharge;
@@ -125,7 +133,16 @@ export default function CartPage() {
 
   const total = subtotal + shipping;
 
-  const placeOrder = (e) => {
+  const amountToFreeShipping = Math.max(
+    0,
+    FREE_SHIPPING_THRESHOLD - subtotal,
+  );
+  const shippingProgress = Math.min(
+    100,
+    (subtotal / FREE_SHIPPING_THRESHOLD) * 100,
+  );
+
+  const placeOrder = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
     axios
@@ -136,18 +153,10 @@ export default function CartPage() {
           paymentMode: formData.paymentMode,
           address: formData.address,
           secondaryAddress: formData.secondaryAddress || "",
-          // products: [
-          //   {
-          //     productId: 1,
-          //     quantity: 1,
-          //   },
-          // ],
-          products: items.map((el) => {
-            return {
-              productId: el.productId,
-              quantity: el.qty,
-            };
-          }),
+          products: items.map((el) => ({
+            productId: el.productId,
+            quantity: el.qty,
+          })),
         },
         {
           headers: {
@@ -156,32 +165,6 @@ export default function CartPage() {
         },
       )
       .then((res) => {
-        // axios.post(
-        //   "https://dev.khalti.com/api/v2/epayment/initiate/",
-        //   {
-        //     return_url: "http://example.com/",
-        //     website_url: "https://example.com/",
-        //     amount: "1000",
-        //     purchase_order_id: "Order01",
-        //     purchase_order_name: "test",
-        //     customer_info: {
-        //       name: "Ram Bahadur",
-        //       email: "test@khalti.com",
-        //       phone: "9800000001",
-        //     },
-        //   },
-        //   {
-        //     headers: {
-        //       Authorization: "key a2d75bcf2a724cf6868a143deb6b8c2c",
-        //       "Content-Type": "application/json",
-        //     },
-        //   },
-        // );
-        // similar to eswa: create form and append fiels for khalit
-
-        // return;
-
-        setSubmitting(true);
         const esewaData = res.data.data.esewa;
         const esewaForm = document.createElement("form");
         esewaForm.setAttribute(
@@ -204,236 +187,369 @@ export default function CartPage() {
       .catch((err) => {
         console.error(err);
       })
-      .finally(() => {});
+      .finally(() => setSubmitting(false));
   };
 
-  if (loading) {
-    return <CartSkeleton />;
-  }
+  const inputClass =
+    "w-full rounded-xl border border-primary-dark/10 bg-white px-4 py-3 text-[14.5px] text-primary-dark outline-none transition-all placeholder:text-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/20";
+
+  if (loading) return <CartSkeleton />;
 
   if (error) {
     return (
-      <div className="p-10 text-center text-red-500">
-        Failed to load cart: {error}
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 px-6 text-center">
+        <div className="grid h-14 w-14 place-items-center rounded-full bg-red-50 text-red-500">
+          <ShoppingBag size={22} />
+        </div>
+        <p className="font-josefin text-[16px] font-semibold text-primary-dark">
+          Could not load your cart
+        </p>
+        <p className="max-w-xs text-[13.5px] text-gray-500">{error}</p>
+        <button
+          onClick={fetchCarts}
+          className="mt-2 h-10 rounded-xl bg-primary px-5 text-[13.5px] font-semibold text-white transition-colors hover:bg-primary/90"
+        >
+          Try again
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white p-6 md:p-10">
-      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 lg:grid-cols-[1fr_320px]">
-        {/* Product table */}
-        <div>
-          <div className="grid grid-cols-[2fr_1fr_1fr_1fr] pb-4 text-lg font-bold text-blue-900">
-            <span>Product</span>
-            <span>Price</span>
-            <span>Quantity</span>
-            <span className="text-right">Total</span>
-          </div>
+    <section className="bg-dark-white pb-16">
+      <div className="container">
+        <div className="-mt-6 rounded-2xl border border-primary-dark/10 bg-white p-6 sm:p-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-4">
+              <span className="grid h-12 w-12 place-items-center rounded-xl bg-primary/10 text-primary">
+                <ShoppingBag size={22} />
+              </span>
+              <div>
+                <h1 className="font-josefin text-[24px] font-bold text-primary-dark sm:text-[28px]">
+                  Shopping Cart
+                </h1>
+                <p className="mt-0.5 text-[13.5px] text-gray-500">
+                  {items.length === 0
+                    ? "Your cart is empty"
+                    : `${items.length} item${items.length === 1 ? "" : "s"} ready for checkout`}
+                </p>
+              </div>
+            </div>
 
-          <div className="divide-y divide-gray-200">
-            {items.map((item) => (
-              <div
-                key={item.id}
-                className="grid grid-cols-[2fr_1fr_1fr_1fr] items-center py-5"
+            {items.length > 0 && (
+              <button
+                onClick={clearCart}
+                className="inline-flex h-10 items-center gap-2 self-start rounded-xl border border-primary-dark/15 bg-white px-4 text-[13px] font-medium text-primary-dark transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-600 sm:self-auto"
               >
-                <div className="flex items-center gap-4">
-                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md">
+                <Trash2 size={14} />
+                Clear cart
+              </button>
+            )}
+          </div>
+        </div>
+
+        {items.length === 0 ? (
+          <div className="mt-8 flex flex-col items-center gap-4 rounded-3xl border border-dashed border-primary-dark/15 bg-white px-6 py-24 text-center">
+            <div className="grid h-16 w-16 place-items-center rounded-full bg-primary/10 text-primary">
+              <ShoppingBag size={26} />
+            </div>
+            <p className="font-josefin text-[18px] font-semibold text-primary-dark">
+              Your cart is empty
+            </p>
+            <p className="max-w-sm text-[13.5px] text-gray-500">
+              Browse our collection and add pieces you love. Your cart will
+              appear here.
+            </p>
+            <Link
+              to="/products"
+              className="mt-2 inline-flex h-11 items-center rounded-xl bg-primary px-6 text-[14px] font-semibold text-white shadow-lg shadow-primary/30 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/40"
+            >
+              Browse products
+            </Link>
+          </div>
+        ) : (
+          <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[1fr_380px]">
+            <div className="space-y-4">
+              {items.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex flex-col gap-4 rounded-2xl border border-primary-dark/10 bg-white p-4 transition-shadow hover:shadow-md sm:flex-row sm:items-center sm:gap-5 sm:p-5"
+                >
+                  <Link
+                    to={`/products/${item.productId}`}
+                    className="h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-dark-white sm:h-28 sm:w-28"
+                  >
                     <img
                       src={item.img}
                       alt={item.name}
                       className="h-full w-full object-cover"
                     />
-                    <button
-                      onClick={() => removeItem(item.id)}
-                      className="absolute -top-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full bg-black text-white hover:bg-gray-700"
-                      aria-label={`Remove ${item.name}`}
-                    >
-                      <X size={12} />
-                    </button>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-800">{item.name}</p>
-                    <p className="text-sm text-gray-400">
-                      Sold by: {item.sellerName}
+                  </Link>
+
+                  <div className="min-w-0 flex-1">
+                    <Link to={`/products/${item.productId}`}>
+                      <h3 className="line-clamp-2 font-josefin text-[15px] font-semibold leading-snug text-primary-dark transition-colors hover:text-primary">
+                        {item.name}
+                      </h3>
+                    </Link>
+                    <p className="mt-1 text-[12.5px] text-gray-400">
+                      Sold by{" "}
+                      <span className="font-medium text-primary-dark">
+                        {item.sellerName}
+                      </span>
                     </p>
+                    <p className="mt-1.5 text-[14px] font-semibold text-primary">
+                      Rs. {item.price.toFixed(2)}
+                    </p>
+
+                    {item.stock < 5 && item.stock > 0 && (
+                      <p className="mt-1 text-[12px] font-medium text-amber-600">
+                        Only {item.stock} left in stock
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between gap-4 sm:flex-col sm:items-end">
+                    <div className="flex items-center rounded-lg border border-primary-dark/10 bg-white">
+                      <button
+                        onClick={() =>
+                          updateQty(item.productId, item.id, item.qty - 1)
+                        }
+                        disabled={item.qty <= 1}
+                        className="grid h-9 w-9 place-items-center text-primary-dark transition-colors hover:text-primary disabled:opacity-30"
+                        aria-label="Decrease quantity"
+                      >
+                        <Minus size={14} />
+                      </button>
+                      <span className="w-8 text-center text-[14px] font-semibold text-primary-dark">
+                        {item.qty}
+                      </span>
+                      <button
+                        onClick={() =>
+                          updateQty(item.productId, item.id, item.qty + 1)
+                        }
+                        disabled={item.qty >= item.stock}
+                        className="grid h-9 w-9 place-items-center text-primary-dark transition-colors hover:text-primary disabled:opacity-30"
+                        aria-label="Increase quantity"
+                      >
+                        <Plus size={14} />
+                      </button>
+                    </div>
+
+                    <div className="text-right">
+                      <p className="text-[15px] font-bold text-primary-dark">
+                        Rs. {(item.price * item.qty).toFixed(2)}
+                      </p>
+                      <button
+                        onClick={() => removeItem(item.id)}
+                        className="mt-1 inline-flex items-center gap-1 text-[12px] text-gray-400 transition-colors hover:text-red-500"
+                      >
+                        <Trash2 size={12} />
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="space-y-5 lg:sticky lg:top-24 lg:self-start">
+              <div className="rounded-2xl border border-primary-dark/10 bg-white p-5">
+                <div className="flex items-center gap-2 text-[13px] text-primary-dark">
+                  <Truck size={15} className="text-primary" />
+                  {amountToFreeShipping > 0 ? (
+                    <span>
+                      Add{" "}
+                      <span className="font-semibold text-primary">
+                        Rs. {amountToFreeShipping.toFixed(0)}
+                      </span>{" "}
+                      more for free shipping
+                    </span>
+                  ) : (
+                    <span className="font-semibold text-secondary">
+                      You've unlocked free shipping!
+                    </span>
+                  )}
+                </div>
+                <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-dark-white">
+                  <div
+                    className="h-full rounded-full bg-primary transition-all duration-500"
+                    style={{ width: `${shippingProgress}%` }}
+                  />
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-primary-dark/10 bg-white p-5">
+                <h2 className="font-josefin text-[16px] font-bold text-primary-dark">
+                  Order Summary
+                </h2>
+
+                <dl className="mt-4 space-y-3 text-[14px]">
+                  <div className="flex justify-between">
+                    <dt className="text-gray-500">Subtotal</dt>
+                    <dd className="font-medium text-primary-dark">
+                      Rs. {subtotal.toFixed(2)}
+                    </dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="text-gray-500">Shipping</dt>
+                    <dd className="font-medium text-primary-dark">
+                      Rs. {shipping.toFixed(2)}
+                    </dd>
+                  </div>
+                  <div className="h-px bg-primary-dark/10" />
+                  <div className="flex justify-between text-[15.5px]">
+                    <dt className="font-bold text-primary-dark">Total</dt>
+                    <dd className="font-bold text-primary">
+                      Rs. {total.toFixed(2)}
+                    </dd>
+                  </div>
+                </dl>
+
+                <p className="mt-4 flex items-center gap-2 text-[12px] text-gray-500">
+                  <ShieldCheck size={13} className="text-secondary" />
+                  Secure checkout · 7-day returns
+                </p>
+              </div>
+
+              <form
+                onSubmit={placeOrder}
+                className="rounded-2xl border border-primary-dark/10 bg-white p-5"
+              >
+                <h2 className="font-josefin text-[16px] font-bold text-primary-dark">
+                  Delivery Details
+                </h2>
+
+                <div className="mt-4 space-y-3">
+                  <input
+                    type="tel"
+                    name="phone"
+                    placeholder="Phone number"
+                    value={formData.phone}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phone: e.target.value })
+                    }
+                    className={inputClass}
+                    required
+                  />
+
+                  <input
+                    type="text"
+                    name="address"
+                    placeholder="Delivery address"
+                    value={formData.address}
+                    onChange={(e) =>
+                      setFormData({ ...formData, address: e.target.value })
+                    }
+                    className={inputClass}
+                    required
+                  />
+
+                  <input
+                    type="text"
+                    name="secondaryAddress"
+                    placeholder="Secondary address (optional)"
+                    value={formData.secondaryAddress}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        secondaryAddress: e.target.value,
+                      })
+                    }
+                    className={inputClass}
+                  />
+                </div>
+
+                <div className="mt-5">
+                  <p className="mb-2.5 text-[12.5px] font-semibold uppercase tracking-wide text-primary-dark">
+                    Payment method
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <label
+                      className={`flex cursor-pointer items-center justify-center gap-2 rounded-xl border px-3 py-3 text-[13.5px] font-medium transition-colors ${
+                        formData.paymentMode === "cash"
+                          ? "border-primary bg-primary/5 text-primary"
+                          : "border-primary-dark/10 bg-white text-primary-dark hover:border-primary/40"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="paymentMode"
+                        value="cash"
+                        checked={formData.paymentMode === "cash"}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            paymentMode: e.target.value,
+                          })
+                        }
+                        className="sr-only"
+                      />
+                      Cash on delivery
+                    </label>
+
+                    <label
+                      className={`flex cursor-pointer items-center justify-center gap-2 rounded-xl border px-3 py-3 text-[13.5px] font-medium transition-colors ${
+                        formData.paymentMode === "esewa"
+                          ? "border-primary bg-primary/5 text-primary"
+                          : "border-primary-dark/10 bg-white text-primary-dark hover:border-primary/40"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="paymentMode"
+                        value="esewa"
+                        checked={formData.paymentMode === "esewa"}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            paymentMode: e.target.value,
+                          })
+                        }
+                        className="sr-only"
+                      />
+                      eSewa
+                    </label>
                   </div>
                 </div>
 
-                <span className="font-semibold text-blue-900">
-                  ${item.price.toFixed(2)}
-                </span>
+                <button
+                  type="submit"
+                  disabled={
+                    submitting ||
+                    items.length === 0 ||
+                    !formData.paymentMode ||
+                    !formData.phone ||
+                    !formData.address
+                  }
+                  className={`mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-xl text-[14.5px] font-semibold text-white transition-all duration-200 ${
+                    submitting ||
+                    items.length === 0 ||
+                    !formData.paymentMode ||
+                    !formData.phone ||
+                    !formData.address
+                      ? "cursor-not-allowed bg-primary/40"
+                      : "cursor-pointer bg-primary shadow-lg shadow-primary/30 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/40"
+                  }`}
+                >
+                  {submitting ? (
+                    "Placing order..."
+                  ) : (
+                    <>
+                      <Lock size={14} />
+                      Place order
+                    </>
+                  )}
+                </button>
 
-                <div className="flex w-fit items-center gap-3 rounded bg-gray-100 px-3 py-1.5 text-gray-400">
-                  <button
-                    onClick={() =>
-                      updateQty(item.productId, item.id, item.qty - 1)
-                    }
-                    className="hover:text-gray-700"
-                    aria-label="Decrease quantity"
-                  >
-                    <Minus size={14} />
-                  </button>
-                  <span className="w-4 text-center text-gray-700">
-                    {item.qty}
-                  </span>
-                  <button
-                    onClick={() =>
-                      updateQty(item.productId, item.id, item.qty + 1)
-                    }
-                    className="hover:text-gray-700 disabled:opacity-30"
-                    aria-label="Increase quantity"
-                    disabled={item.qty >= item.stock}
-                  >
-                    <Plus size={14} />
-                  </button>
-                </div>
-
-                <span className="text-right font-semibold text-blue-900">
-                  £{(item.price * item.qty).toFixed(2)}
-                </span>
-              </div>
-            ))}
-
-            {items.length === 0 && (
-              <p className="py-10 text-center text-gray-400">
-                Your cart is empty.
-              </p>
-            )}
-          </div>
-
-          <div className="mt-6 flex justify-between">
-            <button className="rounded bg-pink-500 px-6 py-2.5 font-semibold text-white transition-colors hover:bg-pink-600">
-              Update Cart
-            </button>
-            <button
-              onClick={clearCart}
-              className="rounded bg-pink-500 px-6 py-2.5 font-semibold text-white transition-colors hover:bg-pink-600"
-            >
-              Clear Cart
-            </button>
-          </div>
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-8">
-          <div>
-            <h2 className="mb-4 text-center text-lg font-bold text-blue-900 lg:text-left">
-              Cart Totals
-            </h2>
-            <div className="space-y-4 rounded-lg bg-indigo-50 p-6">
-              <div className="flex justify-between font-semibold text-blue-900">
-                <span>Subtotals:</span>
-                <span>£{subtotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between border-t border-indigo-100 pt-4 font-semibold text-blue-900">
-                <span>shipping charge:</span>
-                <span>£{shipping.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between border-t border-indigo-100 pt-4 font-semibold text-blue-900">
-                <span>Totals:</span>
-                <span>£{total.toFixed(2)}</span>
-              </div>
-              <p className="flex items-center gap-2 text-sm text-gray-500">
-                <span className="inline-block h-2 w-2 rounded-full bg-green-500" />
-                Shipping & taxes calculated at checkout
-              </p>
-              {/* <button className="w-full rounded bg-green-500 py-3 font-semibold text-white transition-colors hover:bg-green-600">
-                Proceed To Checkout
-              </button> */}
+                <p className="mt-3 text-center text-[11.5px] text-gray-400">
+                  By placing your order you agree to our terms of service.
+                </p>
+              </form>
             </div>
           </div>
-
-          <div>
-            <h2 className="mb-4 text-center text-lg font-bold text-blue-900 lg:text-left">
-              Delivery Details
-            </h2>
-            <form
-              onSubmit={placeOrder}
-              className="space-y-5 rounded-lg bg-indigo-50 p-6"
-            >
-              <input
-                type="tel"
-                name="phone"
-                placeholder="Phone Number"
-                value={formData.phone}
-                onChange={(e) =>
-                  setFormData({ ...formData, phone: e.target.value })
-                }
-                className="w-full border-b border-gray-300 bg-transparent pb-2 text-gray-700 placeholder-gray-400 focus:border-blue-900 focus:outline-none"
-              />
-
-              <input
-                type="text"
-                name="address"
-                placeholder="Address"
-                value={formData.address}
-                onChange={(e) =>
-                  setFormData({ ...formData, address: e.target.value })
-                }
-                className="w-full border-b border-gray-300 bg-transparent pb-2 text-gray-700 placeholder-gray-400 focus:border-blue-900 focus:outline-none"
-              />
-
-              <input
-                type="text"
-                name="secondaryAddress"
-                placeholder="Secondary Address (optional)"
-                value={formData.secondaryAddress}
-                onChange={(e) =>
-                  setFormData({ ...formData, secondaryAddress: e.target.value })
-                }
-                className="w-full border-b border-gray-300 bg-transparent pb-2 text-gray-700 placeholder-gray-400 focus:border-blue-900 focus:outline-none"
-              />
-
-              <div className="space-y-2">
-                <p className="text-sm font-semibold text-blue-900">
-                  Payment Mode
-                </p>
-                <div className="flex gap-6">
-                  <label className="flex cursor-pointer items-center gap-2">
-                    <input
-                      type="radio"
-                      name="paymentMode"
-                      value="cash"
-                      checked={formData.paymentMode === "cash"}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          paymentMode: e.target.value,
-                        })
-                      }
-                      className="accent-pink-500"
-                    />
-                    <span className="text-gray-700">Cash</span>
-                  </label>
-                  <label className="flex cursor-pointer items-center gap-2">
-                    <input
-                      type="radio"
-                      name="paymentMode"
-                      value="esewa"
-                      checked={formData.paymentMode === "esewa"}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          paymentMode: e.target.value,
-                        })
-                      }
-                      className="accent-pink-500"
-                    />
-                    <span className="text-gray-700">eSewa</span>
-                  </label>
-                </div>
-              </div>
-
-              <button
-                className={`rounded ${submitting ? "disabled" : ""} bg-pink-500 px-6 py-2.5 font-semibold text-white transition-colors hover:bg-pink-600`}
-              >
-                {submitting ? "Placing Order" : "Place Order"}
-              </button>
-            </form>
-          </div>
-        </div>
+        )}
       </div>
-    </div>
+    </section>
   );
 }
