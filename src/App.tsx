@@ -5,6 +5,7 @@ import Signup from "./pages/Signup.tsx";
 import Layout from "./pages/Layout.tsx";
 import ProductsListing from "./pages/products/ProductsListing.tsx";
 import ProductDetails from "./pages/products/ProductDetails.tsx";
+import MyProducts from "./pages/products/MyProducts.tsx";
 import axios from "axios";
 import { setUser } from "./redux/features/userSlice.ts";
 import { useDispatch } from "react-redux";
@@ -14,6 +15,7 @@ import Orders from "./components/Orders.tsx";
 import ProtectedRoutes from "./pages/ProtectedRoutes.tsx";
 import Contact from "./pages/Contact.tsx";
 import Shop from "./pages/Shop.tsx";
+import NotFound from "./pages/NotFound.tsx";
 
 function App() {
   const token = localStorage.getItem("token");
@@ -58,12 +60,20 @@ function App() {
         },
         {
           path: "",
-          element: <ProtectedRoutes />,
+          element: <ProtectedRoutes forSeller={true} />,
           children: [
-            { path: "/carts", element: <Cart /> },
-            { path: "/orders", element: <Orders /> },
+            { path: "my-products", element: <MyProducts /> },
           ],
         },
+        {
+          path: "",
+          element: <ProtectedRoutes />,
+          children: [
+            { path: "carts", element: <Cart /> },
+            { path: "orders", element: <Orders /> },
+          ],
+        },
+        { path: "*", element: <NotFound /> },
       ],
     },
   ]);
