@@ -79,7 +79,7 @@ const Footer = ({
           </div>
         </div>
 
-        {/* Shop */}
+
         <div>
           <h3 className="font-josefin text-[15px] font-semibold text-white">
             Shop
@@ -108,7 +108,7 @@ const Footer = ({
           </ul>
         </div>
 
-        {/* Account */}
+    
         <div>
           <h3 className="font-josefin text-[15px] font-semibold text-white">
             Account
@@ -137,7 +137,7 @@ const Footer = ({
           </ul>
         </div>
 
-        {/* Contact */}
+    
         <div>
           <h3 className="font-josefin text-[15px] font-semibold text-white">
             Contact
@@ -166,14 +166,14 @@ const Footer = ({
         </div>
       </div>
 
-      {/* Bottom bar */}
+   
       <div className="border-t border-white/10">
         <div className="container flex flex-col items-center justify-between gap-3 py-4 text-[13px] sm:flex-row">
           <p className="text-white/50">
             © {year} {companyName}. All rights reserved.
           </p>
 
-          {/* Custom legal links (only renders if you pass them) */}
+        
           {links.length > 0 ? (
             <div className="flex flex-wrap items-center gap-5">
               {links.map((l) => (

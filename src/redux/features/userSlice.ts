@@ -18,11 +18,7 @@ export interface UserState {
 const initialState: UserState = {
     value: null
 
-    // {
-    //     firstName: "Ram",
-    //     email: "ram@gmail.com",
-    //     role: "seller"
-    // }
+
 }
 
 export const userSlice = createSlice({
@@ -30,15 +26,9 @@ export const userSlice = createSlice({
     initialState,
     reducers: {
         setUser: (state, action:PayloadAction<UserProfile>) => {
-            // console.log({ action });
+        
             state.value = action.payload
-            // console.log("Payload:", action.payload);
-
-            // state.value = {
-            //     firstName: "Ram",
-            //     email: "ram@gmail.com",
-            //     role: "seller"
-            // }
+           
         },
         logout: (state) => {
             state.value = null

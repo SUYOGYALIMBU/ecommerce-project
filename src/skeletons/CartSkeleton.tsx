@@ -5,9 +5,7 @@ const CartSkeleton = () => {
   return (
     <div className="min-h-screen bg-white p-6 md:p-10">
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 lg:grid-cols-[1fr_320px]">
-        {/* Left Side */}
         <div>
-          {/* Header */}
           <div className="grid grid-cols-[2fr_1fr_1fr_1fr] pb-6">
             <Skeleton width={120} height={24} />
             <Skeleton width={70} height={24} />
@@ -17,14 +15,12 @@ const CartSkeleton = () => {
             </div>
           </div>
 
-          {/* Cart Items */}
           <div className="divide-y divide-gray-200">
             {[1, 2, 3].map((item) => (
               <div
                 key={item}
                 className="grid grid-cols-[2fr_1fr_1fr_1fr] items-center py-6"
               >
-                {/* Product */}
                 <div className="flex items-center gap-4">
                   <Skeleton width={64} height={64} borderRadius={8} />
 
@@ -34,13 +30,10 @@ const CartSkeleton = () => {
                   </div>
                 </div>
 
-                {/* Price */}
                 <Skeleton width={60} height={20} />
 
-                {/* Quantity */}
                 <Skeleton width={90} height={36} borderRadius={6} />
 
-                {/* Total */}
                 <div className="flex justify-end">
                   <Skeleton width={60} height={20} />
                 </div>
@@ -48,16 +41,13 @@ const CartSkeleton = () => {
             ))}
           </div>
 
-          {/* Buttons */}
           <div className="mt-8 flex justify-between">
             <Skeleton width={130} height={42} borderRadius={6} />
             <Skeleton width={130} height={42} borderRadius={6} />
           </div>
         </div>
 
-        {/* Sidebar */}
         <div className="space-y-8">
-          {/* Cart Totals */}
           <div>
             <Skeleton width={120} height={28} className="mb-4" />
 
@@ -81,7 +71,6 @@ const CartSkeleton = () => {
             </div>
           </div>
 
-          {/* Delivery Form */}
           <div>
             <Skeleton width={140} height={28} className="mb-4" />
 

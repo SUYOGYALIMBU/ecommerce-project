@@ -81,20 +81,12 @@ export default function MyProducts() {
     fetchProducts();
   }, []);
 
-  // ===============================
-  // OPEN ADD FORM
-  // ===============================
-
   const handleAddClick = () => {
     setEditingProduct(null);
     setFormData(emptyForm);
     setImages(null);
     setShowForm(true);
   };
-
-  // ===============================
-  // OPEN EDIT FORM
-  // ===============================
 
   const handleEditClick = (product: Product) => {
     setEditingProduct(product);
@@ -111,10 +103,6 @@ export default function MyProducts() {
     setShowForm(true);
   };
 
-  // ===============================
-  // FORM CHANGE
-  // ===============================
-
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement
@@ -126,10 +114,6 @@ export default function MyProducts() {
     });
   };
 
-  // ===============================
-  // ADD / EDIT PRODUCT
-  // ===============================
-
   const handleSubmit = async (
     e: React.FormEvent
   ) => {
@@ -139,8 +123,6 @@ export default function MyProducts() {
       setSaving(true);
 
       if (editingProduct) {
-        // EDIT PRODUCT
-
         await axios.put(
           `http://localhost:4000/api/products/${editingProduct.id}`,
           {
@@ -159,8 +141,6 @@ export default function MyProducts() {
 
         alert("Product updated successfully!");
       } else {
-        // ADD PRODUCT
-
         const data = new FormData();
 
         data.append("title", formData.title);
@@ -211,10 +191,6 @@ export default function MyProducts() {
       setSaving(false);
     }
   };
-
-  // ===============================
-  // DELETE PRODUCT
-  // ===============================
 
   const handleDelete = async (id: number) => {
     const confirmed = window.confirm(
@@ -267,10 +243,6 @@ export default function MyProducts() {
       <section className="bg-dark-white pb-16">
         <div className="container">
 
-          {/* ===============================
-              HEADER
-          =============================== */}
-
           <div className="-mt-6 rounded-2xl border border-primary-dark/10 bg-white p-6 sm:p-8">
             <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
 
@@ -290,8 +262,6 @@ export default function MyProducts() {
                 </div>
               </div>
 
-              {/* ADD BUTTON */}
-
               <button
                 onClick={handleAddClick}
                 className="flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-[13px] font-semibold text-white transition-colors hover:bg-primary-dark"
@@ -301,10 +271,6 @@ export default function MyProducts() {
               </button>
             </div>
           </div>
-
-          {/* ===============================
-              ADD / EDIT FORM
-          =============================== */}
 
           {showForm && (
             <div className="mt-8 rounded-2xl border border-primary-dark/10 bg-white p-6 sm:p-8">
@@ -338,8 +304,6 @@ export default function MyProducts() {
                 className="grid grid-cols-1 gap-5 md:grid-cols-2"
               >
 
-                {/* TITLE */}
-
                 <div>
                   <label className="mb-2 block text-[13px] font-medium text-primary-dark">
                     Product Title
@@ -354,8 +318,6 @@ export default function MyProducts() {
                     className="h-11 w-full rounded-xl border border-primary-dark/15 px-4 text-sm outline-none focus:border-primary"
                   />
                 </div>
-
-                {/* CATEGORY */}
 
                 <div>
                   <label className="mb-2 block text-[13px] font-medium text-primary-dark">
@@ -372,8 +334,6 @@ export default function MyProducts() {
                     className="h-11 w-full rounded-xl border border-primary-dark/15 px-4 text-sm outline-none focus:border-primary"
                   />
                 </div>
-
-                {/* PRICE */}
 
                 <div>
                   <label className="mb-2 block text-[13px] font-medium text-primary-dark">
@@ -392,8 +352,6 @@ export default function MyProducts() {
                   />
                 </div>
 
-                {/* STOCK */}
-
                 <div>
                   <label className="mb-2 block text-[13px] font-medium text-primary-dark">
                     Stock
@@ -411,8 +369,6 @@ export default function MyProducts() {
                   />
                 </div>
 
-                {/* DESCRIPTION */}
-
                 <div className="md:col-span-2">
                   <label className="mb-2 block text-[13px] font-medium text-primary-dark">
                     Description
@@ -427,8 +383,6 @@ export default function MyProducts() {
                     className="w-full rounded-xl border border-primary-dark/15 px-4 py-3 text-sm outline-none focus:border-primary"
                   />
                 </div>
-
-                {/* IMAGE */}
 
                 {!editingProduct && (
                   <div className="md:col-span-2">
@@ -451,8 +405,6 @@ export default function MyProducts() {
                     </p>
                   </div>
                 )}
-
-                {/* BUTTONS */}
 
                 <div className="flex gap-3 md:col-span-2">
                   <button
@@ -480,10 +432,6 @@ export default function MyProducts() {
             </div>
           )}
 
-          {/* ===============================
-              LOADING
-          =============================== */}
-
           {loading && (
             <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {[1, 2, 3, 4].map((i) => (
@@ -494,10 +442,6 @@ export default function MyProducts() {
               ))}
             </div>
           )}
-
-          {/* ===============================
-              EMPTY
-          =============================== */}
 
           {!loading && products.length === 0 && (
             <div className="mt-8 flex flex-col items-center gap-3 rounded-3xl border border-dashed border-primary-dark/15 bg-white py-24 text-center">
@@ -523,10 +467,6 @@ export default function MyProducts() {
               </button>
             </div>
           )}
-
-          {/* ===============================
-              PRODUCTS
-          =============================== */}
 
           {!loading && products.length > 0 && (
             <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -574,8 +514,6 @@ export default function MyProducts() {
 
                     <div className="mt-4 flex items-center gap-2">
 
-                      {/* EDIT */}
-
                       <button
                         onClick={() =>
                           handleEditClick(p)
@@ -585,8 +523,6 @@ export default function MyProducts() {
                         <Edit3 size={13} />
                         Edit
                       </button>
-
-                      {/* DELETE */}
 
                       <button
                         onClick={() =>

@@ -14,8 +14,7 @@ import { useDispatch } from "react-redux";
 import { setCount } from "../redux/features/cartSlice";
 import CartSkeleton from "../skeletons/CartSkeleton";
 
-const PLACEHOLDER_IMG =
-  "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=200&h=200&fit=crop";
+const PLACEHOLDER_IMG = "/images/cat-sofa.jpg";
 
 const FREE_SHIPPING_THRESHOLD = 50000;
 
@@ -53,10 +52,6 @@ export default function CartPage() {
     secondaryAddress: "",
     paymentMode: "",
   });
-
-  // =========================
-  // FETCH CART
-  // =========================
 
   const fetchCarts = async () => {
     setLoading(true);
@@ -113,10 +108,6 @@ export default function CartPage() {
     fetchCarts();
   }, []);
 
-  // =========================
-  // UPDATE QUANTITY
-  // =========================
-
   const updateQty = async (
     productId: number,
     id: number,
@@ -161,10 +152,6 @@ export default function CartPage() {
     }
   };
 
-  // =========================
-  // REMOVE ITEM
-  // =========================
-
   const removeItem = async (id: number) => {
     try {
       const token = localStorage.getItem("token");
@@ -198,10 +185,6 @@ export default function CartPage() {
     }
   };
 
-  // =========================
-  // CLEAR CART
-  // =========================
-
   const clearCart = async () => {
     if (items.length === 0) return;
 
@@ -229,10 +212,6 @@ export default function CartPage() {
       );
     }
   };
-
-  // =========================
-  // PRICE CALCULATIONS
-  // =========================
 
   const subtotal = items.reduce(
     (sum, item) => sum + item.price * item.qty,
@@ -276,10 +255,6 @@ export default function CartPage() {
     (subtotal / FREE_SHIPPING_THRESHOLD) * 100,
   );
 
-  // =========================
-  // PLACE ORDER
-  // =========================
-
   const placeOrder = async (
     e: React.FormEvent<HTMLFormElement>,
   ) => {
@@ -322,10 +297,6 @@ export default function CartPage() {
 
       console.log("Order response:", res.data);
 
-      // =========================
-      // COD SUCCESS
-      // =========================
-
       if (formData.paymentMode === "cod") {
         alert("Order placed successfully!");
 
@@ -340,10 +311,6 @@ export default function CartPage() {
 
         return;
       }
-
-      // =========================
-      // ESEWA
-      // =========================
 
       if (
         formData.paymentMode === "esewa" &&
@@ -402,17 +369,9 @@ export default function CartPage() {
   const inputClass =
     "w-full rounded-xl border border-primary-dark/10 bg-white px-4 py-3 text-[14.5px] text-primary-dark outline-none transition-all placeholder:text-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/20";
 
-  // =========================
-  // LOADING
-  // =========================
-
   if (loading) {
     return <CartSkeleton />;
   }
-
-  // =========================
-  // ERROR
-  // =========================
 
   if (error) {
     return (
@@ -439,15 +398,9 @@ export default function CartPage() {
     );
   }
 
-  // =========================
-  // MAIN UI
-  // =========================
-
   return (
     <section className="bg-dark-white pb-16">
       <div className="container">
-
-        {/* Cart Header */}
 
         <div className="-mt-6 rounded-2xl border border-primary-dark/10 bg-white p-6 sm:p-8">
 
@@ -491,8 +444,6 @@ export default function CartPage() {
           </div>
         </div>
 
-        {/* Empty Cart */}
-
         {items.length === 0 ? (
 
           <div className="mt-8 flex flex-col items-center gap-4 rounded-3xl border border-dashed border-primary-dark/15 bg-white px-6 py-24 text-center">
@@ -521,11 +472,7 @@ export default function CartPage() {
 
         ) : (
 
-          /* Cart Content */
-
           <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[1fr_380px]">
-
-            {/* Cart Items */}
 
             <div className="space-y-4">
 
@@ -535,8 +482,6 @@ export default function CartPage() {
                   key={item.id}
                   className="flex flex-col gap-4 rounded-2xl border border-primary-dark/10 bg-white p-4 transition-shadow hover:shadow-md sm:flex-row sm:items-center sm:gap-5 sm:p-5"
                 >
-
-                  {/* Product Image */}
 
                   <Link
                     to={`/products/${item.productId}`}
@@ -548,8 +493,6 @@ export default function CartPage() {
                       className="h-full w-full object-cover"
                     />
                   </Link>
-
-                  {/* Product Info */}
 
                   <div className="min-w-0 flex-1">
 
@@ -584,11 +527,7 @@ export default function CartPage() {
 
                   </div>
 
-                  {/* Quantity + Price */}
-
                   <div className="flex items-center justify-between gap-4 sm:flex-col sm:items-end">
-
-                    {/* Quantity */}
 
                     <div className="flex items-center rounded-lg border border-primary-dark/10 bg-white">
 
@@ -630,8 +569,6 @@ export default function CartPage() {
 
                     </div>
 
-                    {/* Item Total */}
-
                     <div className="text-right">
 
                       <p className="text-[15px] font-bold text-primary-dark">
@@ -661,11 +598,7 @@ export default function CartPage() {
 
             </div>
 
-            {/* Right Side */}
-
             <div className="space-y-5 lg:sticky lg:top-24 lg:self-start">
-
-              {/* Shipping Progress */}
 
               <div className="rounded-2xl border border-primary-dark/10 bg-white p-5">
 
@@ -707,8 +640,6 @@ export default function CartPage() {
                 </div>
 
               </div>
-
-              {/* Order Summary */}
 
               <div className="rounded-2xl border border-primary-dark/10 bg-white p-5">
 
@@ -773,8 +704,6 @@ export default function CartPage() {
 
               </div>
 
-              {/* Delivery Form */}
-
               <form
                 onSubmit={placeOrder}
                 className="rounded-2xl border border-primary-dark/10 bg-white p-5"
@@ -832,8 +761,6 @@ export default function CartPage() {
 
                 </div>
 
-                {/* Payment */}
-
                 <div className="mt-5">
 
                   <p className="mb-2.5 text-[12.5px] font-semibold uppercase tracking-wide text-primary-dark">
@@ -841,8 +768,6 @@ export default function CartPage() {
                   </p>
 
                   <div className="grid grid-cols-2 gap-2">
-
-                    {/* COD */}
 
                     <label
                       className={`flex cursor-pointer items-center justify-center rounded-xl border px-3 py-3 text-[13.5px] font-medium transition-colors ${
@@ -874,8 +799,6 @@ export default function CartPage() {
                       Cash on delivery
 
                     </label>
-
-                    {/* eSewa */}
 
                     <label
                       className={`flex cursor-pointer items-center justify-center rounded-xl border px-3 py-3 text-[13.5px] font-medium transition-colors ${
@@ -911,8 +834,6 @@ export default function CartPage() {
                   </div>
 
                 </div>
-
-                {/* Submit */}
 
                 <button
                   type="submit"

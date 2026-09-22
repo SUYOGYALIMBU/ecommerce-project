@@ -86,7 +86,6 @@ export default function HeroBanner() {
               />
             </div>
 
-            {/* Small image + dark info card */}
             <div className="col-span-12 flex flex-col gap-4 sm:col-span-4">
               <div className="hidden overflow-hidden rounded-3xl border border-primary-dark/10 bg-white sm:block">
                 <img
@@ -111,7 +110,7 @@ export default function HeroBanner() {
             </div>
           </div>
 
-          {/* Floating status tag */}
+  
           <div className="absolute -bottom-4 left-6 hidden items-center gap-2 rounded-2xl border border-primary-dark/10 bg-white px-4 py-2.5 shadow-lg sm:flex">
             <span className="h-2 w-2 rounded-full bg-secondary" />
             <span className="text-[12.5px] font-medium text-primary-dark">

@@ -16,8 +16,7 @@ const BreadCrumb = ({
   const location = useLocation();
   const newPath = location.pathname.split("/").filter(Boolean);
 
-  // Prefer the explicitly provided `paths`.
-  // Fall back to the URL segments if none were passed.
+
   const crumbs: Path[] =
     paths && paths.length > 0
       ? paths

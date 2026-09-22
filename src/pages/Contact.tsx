@@ -43,16 +43,17 @@ const Contact = () => {
 
       <section className="bg-dark-white pb-16">
         <div className="container">
-          {/* Header card */}
           <div className="-mt-6 rounded-2xl border border-primary-dark/10 bg-white p-6 sm:p-8">
             <div className="flex items-center gap-4">
               <span className="grid h-12 w-12 place-items-center rounded-xl bg-primary/10 text-primary">
                 <Mail size={22} />
               </span>
+
               <div>
                 <h1 className="font-josefin text-[24px] font-bold text-primary-dark sm:text-[28px]">
                   Get in Touch
                 </h1>
+
                 <p className="mt-0.5 text-[13.5px] text-gray-500">
                   Questions about an order or a product? We'd love to hear from
                   you.
@@ -62,17 +63,17 @@ const Contact = () => {
           </div>
 
           <div className="mt-8 grid gap-8 lg:grid-cols-5">
-            {/* LEFT — contact info */}
             <div className="space-y-4 lg:col-span-2">
-              {/* Address */}
               <div className="flex items-start gap-4 rounded-2xl border border-primary-dark/10 bg-white p-5 transition-shadow hover:shadow-md">
                 <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
                   <MapPin size={18} />
                 </span>
+
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">
                     Address
                   </p>
+
                   <p className="mt-1 text-[14.5px] leading-relaxed text-primary-dark">
                     Kapan, Kathmandu
                     <br />
@@ -81,15 +82,16 @@ const Contact = () => {
                 </div>
               </div>
 
-              {/* Phone */}
               <div className="flex items-start gap-4 rounded-2xl border border-primary-dark/10 bg-white p-5 transition-shadow hover:shadow-md">
                 <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
                   <Phone size={18} />
                 </span>
+
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">
                     Phone
                   </p>
+
                   <a
                     href="tel:+9779800000000"
                     className="mt-1 block text-[14.5px] text-primary-dark transition-colors hover:text-primary"
@@ -99,15 +101,16 @@ const Contact = () => {
                 </div>
               </div>
 
-              {/* Email */}
               <div className="flex items-start gap-4 rounded-2xl border border-primary-dark/10 bg-white p-5 transition-shadow hover:shadow-md">
                 <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
                   <Mail size={18} />
                 </span>
+
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">
                     Email
                   </p>
+
                   <a
                     href="mailto:support@furnew.com"
                     className="mt-1 block text-[14.5px] text-primary-dark transition-colors hover:text-primary"
@@ -117,15 +120,16 @@ const Contact = () => {
                 </div>
               </div>
 
-              {/* Hours */}
               <div className="flex items-start gap-4 rounded-2xl border border-primary-dark/10 bg-white p-5 transition-shadow hover:shadow-md">
                 <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
                   <Clock size={18} />
                 </span>
+
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">
                     Working Hours
                   </p>
+
                   <p className="mt-1 text-[14.5px] leading-relaxed text-primary-dark">
                     Sun – Fri · 9:00 AM – 6:00 PM
                     <br />
@@ -134,18 +138,14 @@ const Contact = () => {
                 </div>
               </div>
 
-              {/* Map placeholder */}
-              <div className="flex h-44 items-center justify-center rounded-2xl border border-primary-dark/10 bg-dark-white">
-                <div className="text-center">
-                  <MapPin size={28} className="mx-auto text-primary" />
-                  <p className="mt-2 text-[13px] text-gray-500">
-                    Kapan, Kathmandu
-                  </p>
-                </div>
-              </div>
+              <iframe
+                title="Furnew location"
+                src="https://www.openstreetmap.org/export/embed.html?bbox=85.32%2C27.68%2C85.40%2C27.74&layer=mapnik&marker=27.71,85.36"
+                className="h-44 w-full rounded-2xl border border-primary-dark/10"
+                loading="lazy"
+              />
             </div>
 
-            {/* RIGHT — form */}
             <div className="lg:col-span-3">
               <form
                 onSubmit={handleSubmit}
@@ -154,6 +154,7 @@ const Contact = () => {
                 <h2 className="font-josefin text-[20px] font-bold text-primary-dark">
                   Send us a message
                 </h2>
+
                 <p className="mt-1 text-[13.5px] text-gray-500">
                   We usually reply within 24 hours.
                 </p>
@@ -163,6 +164,7 @@ const Contact = () => {
                     <label className="mb-1.5 block text-[13px] font-medium text-primary-dark">
                       Your Name
                     </label>
+
                     <input
                       type="text"
                       required
@@ -179,6 +181,7 @@ const Contact = () => {
                     <label className="mb-1.5 block text-[13px] font-medium text-primary-dark">
                       Email Address
                     </label>
+
                     <input
                       type="email"
                       required
@@ -196,6 +199,7 @@ const Contact = () => {
                   <label className="mb-1.5 block text-[13px] font-medium text-primary-dark">
                     Subject
                   </label>
+
                   <input
                     type="text"
                     required
@@ -212,6 +216,7 @@ const Contact = () => {
                   <label className="mb-1.5 block text-[13px] font-medium text-primary-dark">
                     Message
                   </label>
+
                   <textarea
                     required
                     rows={6}

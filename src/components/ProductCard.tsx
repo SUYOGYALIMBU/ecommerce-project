@@ -76,7 +76,6 @@ function ProductCard({ product }: { product: Product }) {
       to={`/products/${product.id}`}
       className="group flex h-full flex-col overflow-hidden rounded-2xl border border-primary-dark/10 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary-dark/5"
     >
-      {/* Image */}
       <div className="relative aspect-square w-full overflow-hidden bg-dark-white">
         <img
           src={imageSrc}
@@ -85,14 +84,12 @@ function ProductCard({ product }: { product: Product }) {
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
 
-        {/* Category pill */}
         {categoryName && (
           <span className="absolute left-3 top-3 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide text-primary-dark backdrop-blur-sm">
             {categoryName}
           </span>
         )}
 
-        {/* Wishlist */}
         <button
           onClick={(e) => {
             e.preventDefault();
@@ -104,7 +101,6 @@ function ProductCard({ product }: { product: Product }) {
           <Heart size={15} />
         </button>
 
-        {/* Out of stock */}
         {product.stock === 0 && (
           <div className="absolute inset-0 grid place-items-center bg-white/70">
             <span className="rounded-full bg-primary-dark px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
@@ -114,13 +110,11 @@ function ProductCard({ product }: { product: Product }) {
         )}
       </div>
 
-      {/* Body */}
       <div className="flex flex-1 flex-col p-5">
         <h3 className="line-clamp-2 font-josefin text-[15.5px] font-semibold leading-snug text-primary-dark transition-colors group-hover:text-primary">
           {product.title}
         </h3>
 
-        {/* Rating */}
         <div className="mt-2 flex items-center gap-1.5">
           <div className="flex items-center gap-0.5 text-yellow-500">
             {[1, 2, 3, 4, 5].map((s) => (
@@ -131,21 +125,18 @@ function ProductCard({ product }: { product: Product }) {
           <span className="text-[11.5px] text-gray-400">(22)</span>
         </div>
 
-        {/* Description */}
         {product.description && (
           <p className="mt-2 line-clamp-2 text-[12.5px] leading-relaxed text-gray-500">
             {product.description}
           </p>
         )}
 
-        {/* Price + CTA */}
         <div className="mt-auto pt-5">
           <p className="font-josefin text-[17px] font-bold text-primary">
             NPR {formatPrice(product.price)}
           </p>
 
           <div className="mt-3 flex items-center gap-2">
-            {/* Add to Cart */}
             <button
               onClick={(e) => addToCart(e, product.id)}
               disabled={product.stock === 0}
@@ -155,7 +146,6 @@ function ProductCard({ product }: { product: Product }) {
               Add to Cart
             </button>
 
-            {/* Quick view */}
             <button
               onClick={(e) => {
                 e.preventDefault();

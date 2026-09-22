@@ -2,16 +2,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 
-/* body {
-  font-family: "Josefin Sans", Sans-serif;
-} */
+
 
 @theme {
-  --color-primary: #C97B4A;         /* warm terracotta — buttons, active links, logo mark */
-  --color-primary-dark: #3E2C23;    /* deep walnut — top bar, headings, logo text */
-  --color-secondary: #2F5D50;       /* forest green — cart badge, small accents */
-  --color-secondary-light: #A8C3B8; /* soft sage — subtle hover/disabled states */
-  --color-dark-white: #FAF6F1;      /* warm off-white — page background */
+  --color-primary: #C97B4A;      
+  --color-primary-dark: #3E2C23;   
+  --color-secondary: #2F5D50;      
+  --color-secondary-light: #A8C3B8; 
+  --color-dark-white: #FAF6F1;     
 }
 @theme {
   --font-josefin: "Josefin Sans", Sans-serif;
@@ -28,6 +26,3 @@
 
 
 
-/* @theme {
-  --color-primary-light: #7E33E0;
-} */

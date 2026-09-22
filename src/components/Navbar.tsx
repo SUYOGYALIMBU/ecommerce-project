@@ -120,7 +120,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* ---------- Main navbar ---------- */}
       <div className="border-b border-gray-100">
         <div className="container flex h-[68px] items-center gap-6">
           {/* Logo */}
@@ -133,7 +132,7 @@ const Navbar = () => {
             </span>
           </Link>
 
-          {/* Primary navigation (desktop) */}
+       
           <nav className="hidden flex-1 items-center gap-0.5 lg:flex">
             <NavLink to="/" className={navLinkClass} end>
               Home
@@ -164,7 +163,7 @@ const Navbar = () => {
             </NavLink>
           </nav>
 
-          {/* Right-hand action cluster */}
+  
           <div className="ml-auto flex items-center gap-2">
             {/* Expandable search */}
             <div className="hidden items-center md:flex">
@@ -201,12 +200,12 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* Wishlist */}
+       
             <button className={iconButtonClass} aria-label="Wishlist">
               <Heart size={17} />
             </button>
 
-            {/* Cart with count */}
+   
             <Link
               to="/carts"
               className={`relative ${iconButtonClass}`}
@@ -220,7 +219,7 @@ const Navbar = () => {
               )}
             </Link>
 
-            {/* Mobile menu toggle */}
+    
             <button
               onClick={() => setMenuOpen((v) => !v)}
               className={`${iconButtonClass} lg:hidden`}
@@ -232,7 +231,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* ---------- Mobile panel ---------- */}
       {menuOpen && (
         <div className="border-b border-gray-100 bg-white px-5 py-4 lg:hidden">
           <form

@@ -143,7 +143,6 @@ export default function OrdersPage() {
 
       <section className="bg-dark-white pb-16">
         <div className="container">
-          {/* Header */}
           <div className="-mt-6 rounded-2xl border border-primary-dark/10 bg-white p-6 sm:p-8">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
@@ -160,7 +159,6 @@ export default function OrdersPage() {
                 </p>
               </div>
 
-              {/* Stats */}
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {[
                   {
@@ -206,7 +204,6 @@ export default function OrdersPage() {
             </div>
           </div>
 
-          {/* Empty state */}
           {visibleOrders.length === 0 ? (
             <div className="mt-8 flex flex-col items-center gap-3 rounded-3xl border border-dashed border-primary-dark/15 bg-white py-24">
               <div className="grid h-14 w-14 place-items-center rounded-full bg-primary/10 text-primary">
@@ -226,7 +223,6 @@ export default function OrdersPage() {
               </p>
             </div>
           ) : (
-            /* Orders */
             <div className="mt-6 space-y-4">
               {visibleOrders.map((order) => {
                 const isOpen = !!expanded[order.id];
@@ -239,12 +235,10 @@ export default function OrdersPage() {
                     key={order.id}
                     className="relative overflow-hidden rounded-2xl border border-primary-dark/10 bg-white transition-shadow duration-200 hover:shadow-md"
                   >
-                    {/* Status bar */}
                     <span
                       className={`absolute inset-y-0 left-0 w-1.5 ${accent}`}
                     />
 
-                    {/* Main row */}
                     <button
                       onClick={() => toggleExpand(order.id)}
                       className="flex w-full items-start gap-5 px-6 py-5 text-left"
@@ -254,7 +248,6 @@ export default function OrdersPage() {
                       </div>
 
                       <div className="grid flex-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                        {/* Order number */}
                         <div>
                           <p className="text-[11px] font-medium uppercase tracking-wide text-gray-400">
                             Order Number
@@ -265,7 +258,6 @@ export default function OrdersPage() {
                           </p>
                         </div>
 
-                        {/* Date */}
                         <div>
                           <p className="text-[11px] font-medium uppercase tracking-wide text-gray-400">
                             Placed
@@ -282,7 +274,6 @@ export default function OrdersPage() {
                           </p>
                         </div>
 
-                        {/* Payment */}
                         <div>
                           <p className="text-[11px] font-medium uppercase tracking-wide text-gray-400">
                             Payment
@@ -295,7 +286,6 @@ export default function OrdersPage() {
                           </p>
                         </div>
 
-                        {/* Status */}
                         <div>
                           <p className="text-[11px] font-medium uppercase tracking-wide text-gray-400">
                             Status
@@ -314,7 +304,6 @@ export default function OrdersPage() {
                         </div>
                       </div>
 
-                      {/* Right side */}
                       <div className="flex shrink-0 flex-col items-end gap-2">
                         <span
                           className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold capitalize ${
@@ -335,11 +324,9 @@ export default function OrdersPage() {
                       </div>
                     </button>
 
-                    {/* Expanded details */}
                     {isOpen && (
                       <div className="border-t border-primary-dark/10 bg-dark-white/40 px-6 py-6">
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                          {/* Date */}
                           <div className="rounded-xl border border-primary-dark/10 bg-white p-4">
                             <div className="flex items-center gap-2 text-primary">
                               <CalendarDays size={15} />
@@ -359,7 +346,6 @@ export default function OrdersPage() {
                             </p>
                           </div>
 
-                          {/* Phone */}
                           <div className="rounded-xl border border-primary-dark/10 bg-white p-4">
                             <div className="flex items-center gap-2 text-primary">
                               <Phone size={15} />
@@ -374,7 +360,6 @@ export default function OrdersPage() {
                             </p>
                           </div>
 
-                          {/* Payment */}
                           <div className="rounded-xl border border-primary-dark/10 bg-white p-4">
                             <div className="flex items-center gap-2 text-primary">
                               <CreditCard size={15} />
@@ -392,7 +377,6 @@ export default function OrdersPage() {
                           </div>
                         </div>
 
-                        {/* Address */}
                         <div className="mt-4 rounded-xl border border-primary-dark/10 bg-white p-4">
                           <div className="flex items-center gap-2 text-primary">
                             <MapPin size={15} />
@@ -407,7 +391,6 @@ export default function OrdersPage() {
                           </p>
                         </div>
 
-                        {/* Order summary */}
                         <div className="mt-6 flex flex-col gap-3 rounded-xl bg-primary-dark px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                           <div>
                             <p className="text-[11px] uppercase tracking-wider text-white/60">
