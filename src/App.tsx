@@ -13,7 +13,7 @@ import Cart from "./components/CartPage.tsx";
 import Orders from "./components/Orders.tsx";
 import ProtectedRoutes from "./pages/ProtectedRoutes.tsx";
 import Contact from "./pages/Contact.tsx";
-import Shop from "./pages/Shop.tsx";
+
 import NotFound from "./pages/NotFound.tsx";
 
 type JwtPayload = {
@@ -77,7 +77,7 @@ function App() {
         { path: "", element: <Home /> },
         { path: "login", element: <Login /> },
         { path: "register", element: <Signup /> },
-        { path: "shop", element: <Shop /> },
+     
         { path: "contact", element: <Contact /> },
         {
           path: "products",
