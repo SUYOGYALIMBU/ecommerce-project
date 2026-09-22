@@ -44,12 +44,7 @@ export default function HeroBanner() {
               Explore collection
               <ArrowRight size={16} />
             </Link>
-            <Link
-              to="/shop"
-              className="inline-flex h-12 items-center rounded-xl border border-primary-dark/15 bg-white px-6 text-[15px] font-semibold text-primary-dark transition-colors hover:border-primary/40 hover:text-primary"
-            >
-              Visit showroom
-            </Link>
+          
           </div>
 
      

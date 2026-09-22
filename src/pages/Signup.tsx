@@ -29,31 +29,30 @@ const Signup = () => {
 
   const onSubmit = async (form: SignupForm) => {
     try {
-      console.log(form);
-
       const res = await axios.post(
-        "https://ecom-zb9o.vercel.app/api/signup",
+        "http://localhost:4000/api/signup",
         form,
       );
 
-      if (res.data.success) {
-        toast.success("Account Created Successfully");
-
+      if (res.data.msg === "user created successfully") {
+        toast.success("Account created successfully");
         reset();
 
         setTimeout(() => {
           navigate("/login");
         }, 1500);
+      } else {
+        toast.error(res.data.msg || "Signup failed");
       }
     } catch (error: any) {
-      console.log(error);
+      const data = error?.response?.data;
 
-      if (error?.response?.data?.errors) {
-        error.response.data.errors.forEach((err: any) => {
-          toast.error(err.msg);
+      if (data?.errors && Array.isArray(data.errors)) {
+        data.errors.forEach((err: any) => {
+          toast.error(`${err.field}: ${err.msg}`);
         });
       } else {
-        toast.error(error?.response?.data?.msg || "Signup Failed");
+        toast.error(data?.msg || "Signup failed");
       }
     }
   };
@@ -75,7 +74,6 @@ const Signup = () => {
       <div className="flex min-h-screen items-center justify-center bg-dark-white px-4 py-12">
         <div className="w-full max-w-5xl overflow-hidden rounded-3xl border border-primary-dark/10 bg-white shadow-[0_30px_80px_-40px_rgba(62,44,35,0.35)]">
           <div className="grid lg:grid-cols-2">
-            {/* ---------- Left illustration panel ---------- */}
             <div className="relative hidden flex-col justify-between overflow-hidden bg-primary-dark p-12 text-white lg:flex">
               <div
                 aria-hidden
@@ -133,10 +131,8 @@ const Signup = () => {
               </div>
             </div>
 
-            {/* ---------- Right form panel ---------- */}
             <div className="p-8 sm:p-12 lg:p-14">
               <div className="mx-auto max-w-md">
-                {/* Mobile logo */}
                 <div className="mb-8 lg:hidden">
                   <Link to="/" className="flex items-center gap-2">
                     <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary font-josefin text-[15px] font-bold leading-none text-white">
@@ -237,7 +233,6 @@ const Signup = () => {
                     )}
                   </div>
 
-                  {/* Seller toggle */}
                   <label
                     htmlFor="seller"
                     className="flex cursor-pointer items-start gap-3 rounded-xl border border-primary-dark/10 bg-dark-white/60 p-3.5 transition-colors hover:border-primary/40 hover:bg-primary/5"

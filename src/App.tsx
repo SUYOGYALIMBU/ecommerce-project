@@ -6,7 +6,6 @@ import Layout from "./pages/Layout.tsx";
 import ProductsListing from "./pages/products/ProductsListing.tsx";
 import ProductDetails from "./pages/products/ProductDetails.tsx";
 import MyProducts from "./pages/products/MyProducts.tsx";
-import axios from "axios";
 import { setUser } from "./redux/features/userSlice.ts";
 import { useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
@@ -17,28 +16,57 @@ import Contact from "./pages/Contact.tsx";
 import Shop from "./pages/Shop.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
+type JwtPayload = {
+  id: number;
+  firstName: string;
+  email: string;
+  isSeller: boolean;
+  isAdmin: boolean;
+};
+
+const decodeJwt = (token: string): JwtPayload | null => {
+  try {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join(""),
+    );
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
+};
+
 function App() {
-  const token = localStorage.getItem("token");
   const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(token ? true : false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     if (token) {
-      axios
-        .get("https://ecom-zb9o.vercel.app/api/auth/me", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((res) => {
-          dispatch(setUser(res.data));
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-    } else {
-      setIsLoading(false);
+      const decoded = decodeJwt(token);
+      if (decoded) {
+        dispatch(
+          setUser({
+            firstName: decoded.firstName,
+            email: decoded.email,
+            role: decoded.isAdmin
+              ? "admin"
+              : decoded.isSeller
+                ? "seller"
+                : "user",
+            isAdmin: decoded.isAdmin,
+            isSeller: decoded.isSeller,
+          }),
+        );
+      } else {
+        localStorage.removeItem("token");
+      }
     }
+    setIsLoading(false);
   }, []);
 
   const router = createBrowserRouter([
@@ -61,9 +89,7 @@ function App() {
         {
           path: "",
           element: <ProtectedRoutes forSeller={true} />,
-          children: [
-            { path: "my-products", element: <MyProducts /> },
-          ],
+          children: [{ path: "my-products", element: <MyProducts /> }],
         },
         {
           path: "",

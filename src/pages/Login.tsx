@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
@@ -11,9 +12,43 @@ type LoginForm = {
   password: string;
 };
 
+type JwtPayload = {
+  id: number;
+  firstName: string;
+  email: string;
+  isSeller: boolean;
+  isAdmin: boolean;
+};
+
+const decodeJwt = (token: string): JwtPayload | null => {
+  try {
+    const base64Url = token.split(".")[1];
+
+    const base64 = base64Url
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
+
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map(
+          (c) =>
+            "%" +
+            ("00" + c.charCodeAt(0).toString(16)).slice(-2),
+        )
+        .join(""),
+    );
+
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
+};
+
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const {
     register,
     handleSubmit,
@@ -23,28 +58,38 @@ const Login = () => {
   const onSubmit = async (form: LoginForm) => {
     try {
       const res = await axios.post(
-        "https://ecom-zb9o.vercel.app/api/login",
+        "http://localhost:4000/api/login",
         form,
       );
 
-      console.log(res.data.user);
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
 
-      if (res.data.msg) {
-        console.log(res.data.user);
-        if (res.data.token) {
-          localStorage.setItem("token", res.data.token);
+        const decoded = decodeJwt(res.data.token);
+
+        if (decoded) {
+          dispatch(
+            setUser({
+              firstName: decoded.firstName,
+              email: decoded.email,
+              role: decoded.isAdmin
+                ? "admin"
+                : decoded.isSeller
+                  ? "seller"
+                  : "user",
+              isAdmin: decoded.isAdmin,
+              isSeller: decoded.isSeller,
+            }),
+          );
         }
 
-        dispatch(setUser(res.data.user));
         toast.success("Login Successful");
-        if (res.data.user.isAdmin) {
-          navigate("/admin/dashboard");
-        } else {
-          navigate("/");
-        }
+        navigate("/");
+      } else {
+        toast.error("Login Failed");
       }
     } catch (error: any) {
-      console.log(error);
+      console.error("Login error:", error);
 
       toast.error(
         error?.response?.data?.msg ||
@@ -69,7 +114,6 @@ const Login = () => {
             className="flex flex-col items-center gap-1"
             onSubmit={handleSubmit(onSubmit)}
           >
-            {/* Logo mark */}
             <span className="mb-3 grid h-14 w-14 place-items-center rounded-full bg-primary/10">
               <span className="grid h-9 w-9 place-items-center rounded-full bg-primary font-josefin text-lg font-bold text-white shadow-lg shadow-primary/30">
                 F
@@ -84,11 +128,11 @@ const Login = () => {
               Please login using account details below.
             </p>
 
-            {/* Email */}
             <div className="w-full">
               <label className="mb-1.5 block text-[13px] font-medium text-primary-dark">
                 Email Address
               </label>
+
               <input
                 className="w-full rounded-lg border border-primary-dark/10 bg-dark-white/60 px-4 py-3.5 text-[15px] text-primary-dark outline-none transition-all duration-200 placeholder:text-gray-400 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20"
                 placeholder="you@example.com"
@@ -101,6 +145,7 @@ const Login = () => {
                   },
                 })}
               />
+
               {errors.email && (
                 <p className="mt-1.5 self-start text-sm text-red-500">
                   {errors.email.message}
@@ -108,11 +153,11 @@ const Login = () => {
               )}
             </div>
 
-            {/* Password */}
             <div className="mt-4 w-full">
               <label className="mb-1.5 block text-[13px] font-medium text-primary-dark">
                 Password
               </label>
+
               <input
                 className="w-full rounded-lg border border-primary-dark/10 bg-dark-white/60 px-4 py-3.5 text-[15px] text-primary-dark outline-none transition-all duration-200 placeholder:text-gray-400 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20"
                 type="password"
@@ -125,6 +170,7 @@ const Login = () => {
                   },
                 })}
               />
+
               {errors.password && (
                 <p className="mt-1.5 self-start text-sm text-red-500">
                   {errors.password.message}
@@ -138,7 +184,6 @@ const Login = () => {
               </p>
             </div>
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={isSubmitting}
@@ -151,12 +196,13 @@ const Login = () => {
               {isSubmitting ? "Logging In..." : "Sign In"}
             </button>
 
-            {/* Divider */}
             <div className="mt-6 flex w-full items-center gap-3">
               <span className="h-px flex-1 bg-primary-dark/10" />
+
               <span className="text-[12px] uppercase tracking-widest text-gray-400">
                 or
               </span>
+
               <span className="h-px flex-1 bg-primary-dark/10" />
             </div>
 
@@ -177,3 +223,4 @@ const Login = () => {
 };
 
 export default Login;
+
